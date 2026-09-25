@@ -1,7 +1,7 @@
 <!DOCTYPE html>  <html>  
 <head>  
     <meta charset="utf-8">  
-    <title>PS4 - Exploit Host - 6.70-13.52</title>  
+    <title>PS4 - Exploit Host - 6.72-13.52</title>  
     <link rel="stylesheet" href="../style.css">  
 </head>  
 <body>  
@@ -11,7 +11,7 @@
                 <span class="name-mustafa">PS4 WEBKIT</span>  
             </h1>  <div class="subtitle">Определение диапазона</div>  
     <br>  
-        <div class="version-badge">FW 6.70 - 13.52</div>  
+        <div class="version-badge">FW 6.72 - 13.52</div>  
     </header>  
     <br>
     <hr class="separator">
@@ -41,14 +41,16 @@
 
     if (!isPS4) {  
         document.addEventListener("DOMContentLoaded", () => {  
-            msgs.innerHTML = "Только для PS4 с поддерживаемой прошивкой 6.70–13.52";  
+            msgs.innerHTML = "Только для PS4 с поддерживаемой прошивкой 6.72–13.52";  
             msgs.className = "status-text error";  
         });  
     } else {  
         if (window.applicationCache.status == '0') {  
-            if (fwNum >= 6.70 && fwNum <= 6.72) {
+            if (fwNum >= 6.72 && fwNum <= 6.72) {
                 msgs.innerHTML = "Установка кэша для " + fwVersion + "...";
-                setTimeout(function() { window.location.replace("cache672.html"); }, 500);
+                setTimeout(function() {
+                    window.location.replace("cache672.html");
+                }, 500);
             } else if (fwNum >= 7.00 && fwNum <= 8.52) {  
                 msgs.innerHTML = "Установка кэша для " + fwVersion + "...";  
                 setTimeout(function() {  
@@ -81,14 +83,23 @@
                 });  
             }  
         } else {  
-            // Автоматический запуск новой 6.72 цепочки. Остальные диапазоны не изменены.
-            if (fwNum === 6.72) {
-                msgs.innerHTML = "Запуск 6.72 exploit для " + fwVersion + "...";
-                var script = document.createElement('script');
-                script.src = "672/exploit.js";
-                script.onerror = onScriptError;
-                document.head.appendChild(script);
-            } else if (fwNum >= 7.00 && fwNum <= 8.52) {  
+            // Автоматический запуск exploit без кнопок
+            if (fwNum >= 6.72 && fwNum <= 6.72) {
+                msgs.innerHTML = "Загрузка эксплойта для FW " + fwVersion + "...";
+                // Запускаем 672/index.html в скрытом iframe на заднем плане
+                var frame672 = document.createElement('iframe');
+                frame672.src = "672/index.html";
+                frame672.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;";
+                document.body.appendChild(frame672);
+                // Принимаем статус из iframe и отображаем на нашей странице
+                window.addEventListener('message', function(e) {
+                    if (e.data && e.data.type === 'status672') {
+                        msgs.innerHTML = e.data.msg;
+                        if (e.data.cls) { msgs.className = e.data.cls; }
+                    }
+                });
+            }  
+            else if (fwNum >= 7.00 && fwNum <= 8.52) {  
                 msgs.innerHTML = "Загрузка эксплойта для " + fwVersion + "...";  
                 var script = document.createElement('script');  
                 script.type = 'module';  
